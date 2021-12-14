@@ -1,0 +1,150 @@
+
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device‐width, initial‐scale=1">
+        <link rel="stylesheet" href="styles.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 
+        rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" 
+        crossorigin="anonymous">
+    </head>
+<body>
+    <script>
+        'use strict'
+        const facts_api='http://jservice.io/api/random';
+        //retrieves information from api
+        async function getInfo(){
+            const response = await fetch(facts_api);
+            const info = await response.json();
+            return info[0];
+        };
+
+        //Creates and adds a Question element to the HTML
+        function createQuestionElement(input, container){
+            var element = document.createElement("span");
+            element.id = input.id + "_question"; 
+            element.name = "question"
+            element.className = "newQuestion";
+            element.innerHTML = input.question;
+            return element;
+        //document.getElementById(container).appendChild(element); 
+        };
+
+        //creates and adds an answer element to the HTML
+        function createNewAnswerElement(input, container){
+            var element = document.createElement("span");
+            element.name = "answer"
+            element.id = input.id +"_answer"; 
+            element.className = "newAnswer";
+            element.innerHTML = input.answer;
+            return element;
+        //document.getElementById(container).appendChild(element); 
+
+        };
+        //tracks how many times button was clicked
+        function buttonClicked(){
+            if(document.getElementById("button-tracker").firstChild.textContent.parseInt() >= 6){
+                addLimitNotice();
+            }else{
+                var doc =  document.getElementById("button-tracker");
+                console.log(doc.firstChild.parseInt());
+                var newText = document.createTextNode(doc.firstChild.parseInt() + 2);
+            document.getElementById("button-tracker").replaceChild(newText, doc.firstChild); 
+            }
+        }
+
+        //populates the question and answer elements to the html
+        async function populate(container){
+            const data = await getInfo();
+            var element = document.createElement("div");
+            element.className = "setbox";
+            element.appendChild(createQuestionElement(data));
+            element.appendChild(createNewAnswerElement(data));
+            document.getElementById(container).appendChild(element);
+            document.getElementById("errorbox").innerHTML="";
+
+        }
+
+        //error handling function sends alert to user
+        function addErrorNotice(){
+            //var element = document.createElement("span");
+            //element.className = "error";
+            document.getElementById("errorbox").innerHTML = "<strong>It seems we had a problem loading the entire question and solution. Try again!</strong>";
+            //console.log(element);
+        //document.getElementById("errorbox").appendChild(element);
+
+        }
+
+        //error handling function
+        function addLimitNotice(){
+           // var element = document.createElement("span");
+           // element.className = "error";
+            document.getElementById("errorbox").innerHTML = "<strong>It seems you've reached the limit of facts on this page. Refresh the page!</strong>";
+            //console.log(element);
+        //document.getElementById("imagebox").appendChild(element);
+
+        }
+
+        //checks if html space is full before populating
+        function smartPopulate(){
+
+            var collection = document.getElementsByClassName("setbox").length;
+
+                if(collection < 3){
+                    populate("left-container").catch(error =>{
+                        addErrorNotice();
+                    });
+                }else if(collection < 6){
+                        populate('right-container').catch(error =>{
+                            addErrorNotice();
+                        });
+                }else{
+                    addLimitNotice();
+                };
+        }
+
+
+    </script>
+    <header>
+        <div class="flexbox left-side top" >
+            <h1 id="title">Random Facts and You!</h1>
+        </div>
+        <div class="flexbox right-side bottom">
+            <h6 id="caption">Presented by ReindeerDevTech</h6>
+        </div>
+    </header>
+
+    <div id="page-holder" class="flexbox top">
+        <div class="flexbox spaced" height="80%">
+            <div id="left-container" class="left-side flexbox spaced" width="20%" >
+                <span></span>
+            </div>
+            <div id="imagebox" height="100%"> 
+                <img src="transparent-globe.png" width="40%" height="60%" background-color="transparent">
+                <div class="bottom">
+                    <p>
+                        Random Facts and You! is your one stop trivia shop for all things random facts and questions around the globe.
+                        Simply refresh the page and learn something new!  Click the button to add a random question and answer! <br><br> But <strong>BEWARE</strong>,
+                        neither us nor you will ever know if you'll get the same fact twice, so definitely have
+                        a pen and paper handy. 
+                    </p> 
+                    <button onclick="smartPopulate()">Load New Fact</button>
+                    <span id="errorbox">
+                        <span></span>
+                    </span>
+                </div>        
+            </div>
+            <div id="right-container" class="right-side flexbox spaced" width="20%" > 
+                <span></span>
+            </div>
+        
+        </div>
+        
+    </div>
+
+
+    <footer>
+        nicepng.com<br> http://jservice.io/api/random;<br>Youtube.com/TheCodingTrain
+    </footer>
+</body>
+</html>
